@@ -50,36 +50,24 @@ df_tarifs = spark.read \
 
 print("Aperçu des données chargées :")
 
-print(df_consommation.show(5))
-print("----")
-print("Batiments")
-print(df_batiments.show(5))
-print("----")
-print("Météo")
-print(df_meteo.show(5))
-print("----")
-print("Tarifs")
-print(df_tarifs.show(5))
+# Fusionner avec le referentiel batiments
+df_fusion = df_consommation.join(
+    df_batiments,
+    on=["batiment_id"],
+    how="left"
+)
 
 # Fusionner avec les donnees meteo (sur commune et timestamp arrondi a l'heure)
-# Créer une colonne "timestamp_hour" arrondie à l'heure
-
-# Fusionner sur commune et heure
-df_fusion = df_consommation.join(
+df_fusion = df_fusion.join(
     df_meteo,
-    on=["timestamp"],
+    on=["commune", "timestamp"],
     how="left"
 )
 
 print("Après fusion avec météo")
 print(df_fusion.show(5))
 
-# Fusionner avec le referentiel batiments
-df_fusion = df_fusion.join(
-    df_batiments,
-    on=["commune", "batiment_id"],
-    how="left"
-)
+
 
 # Fusionner avec les tarifs pour calculer le cout financier
 df_fusion = df_fusion.join(
