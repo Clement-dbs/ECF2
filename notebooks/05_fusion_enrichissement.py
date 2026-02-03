@@ -64,11 +64,6 @@ df_fusion = df_fusion.join(
     how="left"
 )
 
-print("Après fusion avec météo")
-print(df_fusion.show(5))
-
-
-
 # Fusionner avec les tarifs pour calculer le cout financier
 df_fusion = df_fusion.join(
     df_tarifs,
@@ -76,7 +71,34 @@ df_fusion = df_fusion.join(
     how="left"
 )
 
-
-print(f"Fusion terminé : {df_fusion}")
 print(df_fusion.show(5))
 
+
+# - Creer des features derivees :
+
+#   - Consommation par occupant
+df_consommation_par_occupant = df_fusion.withColumn("consommation_par_occupant", F.col("consommation") / F.col("nb_occupants"))
+#   - Consommation par m2
+df_consommation_par_m2 = df_consommation_par_occupant.withColumn("consommation_par_m2", F.col("consommation") / F.col("surface"))
+#   - Cout journalier, mensuel, annuel
+df_cout_journalier = df_consommation_par_m2.withColumn("cout_journalier", F.col("consommation") * F.col("tarif_kwh"))
+df_cout_mensuel = df_cout_journalier.withColumn("cout_mensuel", F.col("cout_journalier") * 30)
+df_cout_annuel = df_cout_mensuel.withColumn("cout_annuel", F.col("cout_mensuel") * 12)
+
+#   - Indice de performance energetique (IPE)
+df_ipe = df_cout_journalier.withColumn("ipe", F.col("consommation") / F.col("surface") * 1000)
+
+
+print("Résultats des features dérivées :")
+print("Consommation par occupant")
+print(df_consommation_par_occupant.show(5))
+print("Consommation par m2")
+print(df_consommation_par_m2.show(5))
+print("Cout journalier")
+print(df_cout_journalier.show(5))
+print("Cout mensuel")
+print(df_cout_mensuel.show(5))
+print("Cout annuel")
+print(df_cout_annuel.show(5))
+print("IPE")
+print(df_ipe.show(5))
