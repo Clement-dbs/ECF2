@@ -37,6 +37,7 @@ print("\nMatrice de corrélation :")
 print(correlation_matrix)
 
 print("\nCorrélations significatives (>0.5 ou <-0.5) :")
+
 # Fonction pour déterminer la force de la corrélation
 def corr_strength(corr_val):
     if abs(corr_val) > 0.5:

@@ -20,7 +20,6 @@
 
 # In[ ]:
 
-
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 
@@ -48,57 +47,33 @@ df_tarifs = spark.read \
           .option("sep", ",") \
           .csv("/data_ecf/tarifs_energie.csv")
 
-print("Aperçu des données chargées :")
+# Fusionner les données
+df_fusion = df_consommation.join(df_batiments, on="batiment_id", how="left") \
+                           .join(df_meteo, on=["commune", "timestamp"], how="left") \
+                           .join(df_tarifs, on="type_energie", how="left")
 
-# Fusionner avec le referentiel batiments
-df_fusion = df_consommation.join(
-    df_batiments,
-    on=["batiment_id"],
-    how="left"
-)
+#  Creer des features derivees :
+df_fusion = df_fusion.withColumn("consommation_par_occupant", F.round(F.col("consommation") / F.col("nb_occupants_moyen"),2)) \
+                     .withColumn("consommation_par_m2", F.round(F.col("consommation") / F.col("surface_m2"),2)) \
+                     .withColumn("ipe", F.round(F.col("consommation") / F.col("surface_m2") * 1000,2))
 
-# Fusionner avec les donnees meteo (sur commune et timestamp arrondi a l'heure)
-df_fusion = df_fusion.join(
-    df_meteo,
-    on=["commune", "timestamp"],
-    how="left"
-)
+# Cout journalier, mensuel, annuel
+df_cout_journalier = df_fusion.groupBy("batiment_id","type_energie","date") \
+    .agg(F.round(F.sum("consommation"),2).alias("consommation_journaliere"),
+         F.round(F.sum(F.col("consommation")*F.col("tarif_unitaire")),2).alias("cout_journalier"))
 
-# Fusionner avec les tarifs pour calculer le cout financier
-df_fusion = df_fusion.join(
-    df_tarifs,
-    on=["type_energie"],
-    how="left"
-)
+df_cout_mensuel = df_fusion.groupBy("batiment_id","type_energie","annee","mois") \
+    .agg(F.round(F.sum("consommation"),2).alias("consommation_mensuelle"),
+         F.round(F.sum(F.col("consommation")*F.col("tarif_unitaire")),2).alias("cout_mensuel"))
 
-print(df_fusion.show(5))
+df_cout_annuel = df_fusion.groupBy("batiment_id","type_energie","annee") \
+    .agg(F.round(F.sum("consommation"),2).alias("consommation_annuelle"),
+         F.round(F.sum(F.col("consommation")*F.col("tarif_unitaire")),2).alias("cout_annuel"))
 
+df_final = df_fusion.join(df_cout_journalier, on=["batiment_id","type_energie","date"], how="left") \
+                    .join(df_cout_mensuel, on=["batiment_id","type_energie","annee","mois"], how="left") \
+                    .join(df_cout_annuel, on=["batiment_id","type_energie","annee"], how="left")
 
-# - Creer des features derivees :
-
-#   - Consommation par occupant
-df_consommation_par_occupant = df_fusion.withColumn("consommation_par_occupant", F.col("consommation") / F.col("nb_occupants"))
-#   - Consommation par m2
-df_consommation_par_m2 = df_consommation_par_occupant.withColumn("consommation_par_m2", F.col("consommation") / F.col("surface"))
-#   - Cout journalier, mensuel, annuel
-df_cout_journalier = df_consommation_par_m2.withColumn("cout_journalier", F.col("consommation") * F.col("tarif_kwh"))
-df_cout_mensuel = df_cout_journalier.withColumn("cout_mensuel", F.col("cout_journalier") * 30)
-df_cout_annuel = df_cout_mensuel.withColumn("cout_annuel", F.col("cout_mensuel") * 12)
-
-#   - Indice de performance energetique (IPE)
-df_ipe = df_cout_journalier.withColumn("ipe", F.col("consommation") / F.col("surface") * 1000)
-
-
-print("Résultats des features dérivées :")
-print("Consommation par occupant")
-print(df_consommation_par_occupant.show(5))
-print("Consommation par m2")
-print(df_consommation_par_m2.show(5))
-print("Cout journalier")
-print(df_cout_journalier.show(5))
-print("Cout mensuel")
-print(df_cout_mensuel.show(5))
-print("Cout annuel")
-print(df_cout_annuel.show(5))
-print("IPE")
-print(df_ipe.show(5))
+# --- Sauvegarde ---
+df_final.write.mode("overwrite").parquet("/output/consommations_enrichies")
+df_final.toPandas().to_csv("/output/consommations_enrichies.csv", index=False)

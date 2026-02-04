@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # #### Etape 1.2 : Pipeline de nettoyage Spark
 # 
 # **Competence evaluee : C2.2 - Traiter des donnees structurees avec un langage de programmation**
@@ -19,8 +16,6 @@
 # - Script `02_nettoyage_spark.py` (executable en ligne de commande)
 # - Fichiers Parquet dans `output/consommations_clean/`
 # - Log de traitement (lignes en entree/sortie, lignes supprimees)
-
-# In[ ]:
 
 
 from pyspark.sql import SparkSession

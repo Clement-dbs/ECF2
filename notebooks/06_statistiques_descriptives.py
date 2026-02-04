@@ -66,9 +66,5 @@ df = df.withColumn(
 print("Repartition des classe energetique DPE")
 df.show(5)
 
-# - Analyser l'evolution temporelle (tendances mensuelles, saisonnalite)
-# df = df.groupBy("mois").agg(F.sum("consommation").alias("total_consommation"))
-# df.show(10)
-
 df_to_pandas = df.toPandas()
 df_to_pandas.to_csv("/output/tableau_de_synthese.csv", index=False)
