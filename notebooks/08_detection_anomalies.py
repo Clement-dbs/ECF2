@@ -1,21 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# #### Etape 3.3 : Detection d'anomalies
-# - Identifier les pics de consommation anormaux (>3 ecarts-types)
-# - Detecter les periodes de sous-consommation suspectes (batiment ferme non declare)
-# - Reperer les batiments dont la consommation ne correspond pas a leur DPE
-# - Lister les batiments necessitant un audit energetique
-# 
-# **Livrables** :
-# - Notebook `08_detection_anomalies.ipynb`
-# - Liste des anomalies `output/anomalies_detectees.csv`
-# - Rapport de recommandations d'audit
-# 
-
-# In[4]:
-
-
 import pandas as pd
 from pyspark.sql import SparkSession
 
