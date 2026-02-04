@@ -13,8 +13,9 @@ services:
       - "7077:7077"
       - "4040:4040"
     volumes:
-      - ./data:/data
-      - ./apps:/apps
+      - ./data_ecf:/data_ecf
+      - ./notebooks:/notebooks
+      - ./output:/output
     networks:
       - spark-network
 
@@ -31,6 +32,7 @@ services:
     volumes:
       - ./data_ecf:/data_ecf
       - ./notebooks:/notebooks
+      - ./output:/output
     networks:
       - spark-network
 
@@ -45,8 +47,9 @@ services:
     depends_on:
       - spark-master
     volumes:
-      - ./data:/data
-      - ./apps:/apps
+      - ./data_ecf:/data_ecf
+      - ./notebooks:/notebooks
+      - ./output:/output
     networks:
       - spark-network
 
@@ -61,8 +64,9 @@ services:
     depends_on:
       - spark-master
     volumes:
-      - ./data:/data
-      - ./apps:/apps
+      - ./data_ecf:/data_ecf
+      - ./notebooks:/notebooks
+      - ./output:/output
     networks:
       - spark-network
 
@@ -75,8 +79,9 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ./notebooks:/home/jovyan/work
-      - ./data:/home/jovyan/data
+      - ./data_ecf:/data_ecf
+      - ./notebooks:/notebooks
+      - ./output:/output
     depends_on:
       - spark-master
     networks:
