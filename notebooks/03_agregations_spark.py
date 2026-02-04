@@ -1,6 +1,17 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 
+import os
+
+path = "/output/consommation_clean"
+print("Contenu du dossier racine:", os.listdir(path))
+
+# Lister récursivement les fichiers
+for root, dirs, files in os.walk(path):
+    for f in files:
+        print(root, f)
+
+
 spark = SparkSession.builder \
     .master("local") \
     .appName("03_agregations") \
@@ -18,7 +29,7 @@ df_batiments = spark.read \
 
 df_batiments.show(5)
 # Charger les donnees de consommation avec PySpark
-df_consommation_parquet = spark.read.parquet("/output/consommation_clean")
+df_consommation_parquet = spark.read.parquet("/output/consommation_clean/*")
 
 df_consommation_parquet.limit(5).show()
 

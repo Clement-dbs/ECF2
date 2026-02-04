@@ -176,14 +176,14 @@ Tarifs de l'energie par periode (propre).
 **Livrables** :
 - Script `02_nettoyage_spark.py` (executable en ligne de commande)
 - Fichiers Parquet dans `output/consommations_clean/`
-- Log de traitement (lignes en entree/sortie, lignes supprimees)
+- Log de traitement (lignes en entree/sortie, lignes supprimees) 🔴
 
 #### Etape 1.3 : Agregations avancees Spark
 - Joindre consommations avec referentiel batiments
 - Calculer l'intensite energetique (kWh/m2)
 - Identifier les batiments hors norme (>3x la mediane de leur categorie)
 - Calculer les totaux par commune et par type de batiment
-- Creer une vue SQL exploitable
+- Creer une vue SQL exploitable 🔴
 
 **Livrables** :
 - Notebook `03_agregations_spark.ipynb`
@@ -224,7 +224,7 @@ Tarifs de l'energie par periode (propre).
   - Consommation par m2
   - Cout journalier, mensuel, annuel
   - Indice de performance energetique (IPE)
-  - Ecart a la moyenne de la categorie
+  - Ecart a la moyenne de la categorie 🔴
 
 **Livrables** :
 - Notebook `05_fusion_enrichissement.ipynb`
@@ -241,8 +241,8 @@ Tarifs de l'energie par periode (propre).
 - Calculer les statistiques par type d'energie, type de batiment et commune
 - Identifier les batiments les plus/moins energivores
 - Calculer la repartition des consommations par classe energetique DPE
-- Analyser l'evolution temporelle (tendances mensuelles, saisonnalite)
-- Comparer la consommation theorique (selon DPE) vs reelle
+- Analyser l'evolution temporelle (tendances mensuelles, saisonnalite) 🔴
+- Comparer la consommation theorique (selon DPE) vs reelle 🔴
 
 **Livrables** :
 - Notebook `06_statistiques_descriptives.ipynb`
@@ -253,9 +253,9 @@ Tarifs de l'energie par periode (propre).
   - Consommations (electricite, gaz, eau)
   - Variables meteo (temperature, humidite, rayonnement, vent)
   - Caracteristiques batiments (surface, nb occupants, annee construction)
-- Identifier les correlations significatives (>0.5 ou <-0.5)
-- Analyser l'impact de la temperature sur la consommation de chauffage
-- Etudier l'effet du rayonnement solaire sur la consommation electrique
+- Identifier les correlations significatives (>0.5 ou <-0.5) 
+- Analyser l'impact de la temperature sur la consommation de chauffage 🔴
+- Etudier l'effet du rayonnement solaire sur la consommation electrique 🔴
 
 **Livrables** :
 - Notebook `07_analyse_correlations.ipynb`
@@ -297,7 +297,7 @@ Chaque graphique doit inclure : titre explicite, labels des axes avec unites, le
 #### Etape 4.2 : Visualisations Seaborn
 Produire les visualisations suivantes avec Seaborn :
 
-1. Pairplot des consommations (electricite, gaz, eau) par saison
+1. Pairplot des consommations (electricite, gaz, eau) par saison 🔴
 2. Violin plot de la consommation electrique par type de batiment
 3. Heatmap annotee de la matrice de correlation complete
 4. FacetGrid : evolution mensuelle par commune (top 6 communes)
